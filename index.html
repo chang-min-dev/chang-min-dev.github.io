@@ -37,15 +37,13 @@
     </button>
 
     <script>
-      document
-        .getElementById("trackUser")
-        .addEventListener("click", function () {
-          window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({
-            event: "setUser",
-            userID: "aaaaa-bbbbb-changmin",
-          });
+      document.getElementById("setUser").addEventListener("click", function () {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "setUser",
+          userID: "aaaaa-bbbbb-changmin",
         });
+      });
     </script>
   </body>
 </html>
