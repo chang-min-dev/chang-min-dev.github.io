@@ -32,8 +32,20 @@
     ></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <h1>Hello world!</h1>
-    <button>
+    <button id="setUser">
       <a href="https://www.google.com">Google</a>
     </button>
+
+    <script>
+      document
+        .getElementById("trackUser")
+        .addEventListener("click", function () {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: "setUser",
+            userID: "aaaaa-bbbbb-changmin",
+          });
+        });
+    </script>
   </body>
 </html>
