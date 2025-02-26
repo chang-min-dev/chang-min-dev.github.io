@@ -32,57 +32,53 @@ ___TEMPLATE_PARAMETERS___
     "displayName": "FlareLane Project ID",
     "help": "Enter your FlareLane Project ID",
     "defaultValue": "1850566f-1ac9-4248-b0b9-beb93df92d0d"
-  },
-  {
-    "type": "BOOLEAN",
-    "name": "enableLogging",
-    "displayName": "Enable Debug Logging",
-    "help": "Enable logging in the console for debugging purposes.",
-    "defaultValue": false
   }
 ]
 
 ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 const log = require('logToConsole');
 const injectScript = require('injectScript');
-const dataLayer = require('dataLayer');
-const getGlobal = require('getGlobal');  // getGlobal을 사용하여 글로벌 변수 접근
+const getGlobal = require('getGlobal');
+const setInWindow = require('setInWindow'); // dataLayer 대신 사용
+const copyFromDataLayer = require('copyFromDataLayer'); // dataLayer 데이터를 읽어오기
 
 const projectId = data.projectId;
-const enableLogging = data.enableLogging;
 
-if (!projectId) {
-  log('FlareLane Web SDK: Project ID is required.');
+// Validate projectId
+if (!projectId || typeof projectId !== 'string' || projectId.trim() === '') {
+  log('FlareLane Web SDK: Invalid Project ID.');
   data.gtmOnFailure();
   return;
 }
 
 const scriptUrl = "https://cdn.flarelane.com/WebSDK-staging.js";
 const global = getGlobal();
-const FlareLane = global.FlareLane;  // window 대신 getGlobal()을 통해 접근
 
 // Check if FlareLane SDK is already loaded
-if (!FlareLane) {
+if (!global.FlareLane) {
   injectScript(scriptUrl, function() {
     log('FlareLane Web SDK: Successfully loaded.');
 
-    global.FlareLane = getGlobal().FlareLane;  // 다시 글로벌 객체를 가져옴
+    // Delay to ensure FlareLane is properly initialized
 
-    if (global.FlareLane && typeof global.FlareLane.initialize === 'function') {
-      global.FlareLane.initialize({ projectId: projectId });
+      global.FlareLane = getGlobal().FlareLane;
 
-      if (enableLogging) {
-        log('FlareLane Web SDK: Initialized with Project ID:', projectId);
+      if (global.FlareLane && typeof global.FlareLane.initialize === 'function') {
+        global.FlareLane.initialize({ projectId: projectId });
+
+      log('FlareLane Web SDK: Initialized with Project ID: ' + projectId);
+
+
+        // Safe way to push to dataLayer in GTM Sandbox
+        let dataLayer = copyFromDataLayer() || [];
+        dataLayer.push({ event: 'FlareLaneInitialized', projectId: String(projectId) });
+        setInWindow('dataLayer', dataLayer); // Sandbox에서 dataLayer에 값 삽입
+
+        data.gtmOnSuccess();
+      } else {
+        log('FlareLane Web SDK: Initialization failed - FlareLane object not found.');
+        data.gtmOnFailure();
       }
-
-      // Push event to the data layer for tracking
-      dataLayer.push({ event: 'FlareLaneInitialized', projectId: projectId });
-
-      data.gtmOnSuccess();
-    } else {
-      log('FlareLane Web SDK: Initialization failed - FlareLane object not found.');
-      data.gtmOnFailure();
-    }
   });
 } else {
   log('FlareLane Web SDK: Already loaded.');
