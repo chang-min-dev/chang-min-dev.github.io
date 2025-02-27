@@ -62,5 +62,15 @@
 
     <br />
     <button id="injectScript">injectScript</button>
+    <button id="injectScript2" onclick="injectScript()">injectScript2</button>
+
+    <script>
+      function injectScript() {
+        var script = document.createElement("script");
+        script.src = "https://cdn.flarelane.com/WebSDK-staging.js";
+        script.charset = "UTF-8";
+        document.head.appendChild(script);
+      }
+    </script>
   </body>
 </html>
