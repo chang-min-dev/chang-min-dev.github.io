@@ -30,10 +30,11 @@
         style="display: none; visibility: hidden"
       ></iframe
     ></noscript>
-    <!-- <script
-      src="https://cdn.flarelane.com/WebSDK-staging.js"
+    <script
+      src="https://cdn.flarelane.com/WebSDK.js"
       charset="UTF-8"
-    ></script> -->
+    ></script>
+    <script>FlareLane.initialize({projectId: "c3dad85f-921e-41cb-92c2-33319b1594da"})</script>
     <!-- End Google Tag Manager (noscript) -->
     <h1>Hello world!</h1>
 
@@ -67,7 +68,7 @@
     <script>
       function injectScript() {
         var script = document.createElement("script");
-        script.src = "https://cdn.flarelane.com/WebSDK-staging.js";
+        script.src = "https://cdn.flarelane.com/WebSDK.js";
         script.charset = "UTF-8";
         document.head.appendChild(script);
       }
